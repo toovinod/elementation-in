@@ -1,0 +1,31 @@
+export const metadata = {
+  title: "Configuration",
+  description: "Overlay options, storage behavior, and environment variables.",
+};
+
+# Configuration
+
+## Overlay options
+
+See [SDK API](/docs/sdk-api) for the full `<ElementationOverlay />` prop list. The two you'll
+use most:
+
+- **`projectKey`** — groups annotations under a project.
+- **`apiUrl`** — switches persistence from `localStorage` to your dashboard.
+
+## Storage behavior
+
+Elementation uses a small storage abstraction (`@elementation/core/storage`):
+
+- **No `apiUrl`** → the `localStorage` adapter (zero-config, per-browser). Keys:
+  `elementation:projects` and `elementation:annotations`.
+- **With `apiUrl`** → the HTTP adapter, which POSTs captures to your dashboard's
+  [REST API](/docs/rest-api).
+
+Both implement the same `CaptureStore` interface, so you can swap them freely.
+
+## Environment variables (dashboard)
+
+- **`DATABASE_URL`** — the database connection string. Defaults to a local SQLite file
+  (`file:./dev.db`). See [Self-hosting](/docs/self-hosting) to move to Postgres.
+- **`NEXT_PUBLIC_APP_URL`** — the public base URL, used in metadata and install snippets.

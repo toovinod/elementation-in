@@ -1,0 +1,23 @@
+export const metadata = {
+  title: "Webhooks",
+  description: "Push annotations to external services.",
+};
+
+# Webhooks
+
+> **Roadmap.** Webhooks are planned, not yet shipped.
+
+Webhooks will let you forward new annotations to external services so they fit your
+existing workflow.
+
+## What it will do
+
+- Fire a signed `POST` to a configured URL whenever an annotation is created.
+- Deliver the full annotation payload, including the capture and generated prompt.
+- Enable integrations like creating a Linear issue, opening a GitHub issue, or posting to
+  Slack.
+
+## Today
+
+Use the [REST API](/docs/rest-api) to poll for annotations, or read them from the
+dashboard. Track progress on the [roadmap](/docs/roadmap).

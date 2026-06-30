@@ -1,0 +1,39 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "globalDependencies": ["tooling/typescript-config/*.json", "prettier.config.mjs", ".env"],
+  "globalEnv": ["NODE_ENV", "DATABASE_URL", "NEXT_PUBLIC_APP_URL"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^topo"]
+    },
+    "check-types": {
+      "dependsOn": ["^topo"]
+    },
+    "test": {
+      "dependsOn": ["^topo"],
+      "outputs": []
+    },
+    "test:e2e": {
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:push": {
+      "cache": false,
+      "interactive": true
+    },
+    "topo": {
+      "dependsOn": ["^topo"]
+    }
+  }
+}

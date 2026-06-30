@@ -1,0 +1,32 @@
+export const metadata = {
+  title: "Introduction",
+  description: "What Elementation is and how it turns UI feedback into precise AI coding prompts.",
+};
+
+# Introduction
+
+**Elementation** lets you click a UI element, write feedback, and copy a precise prompt for an AI coding agent.
+
+Instead of saying "fix the blue button", you give the agent the element selector, current styles, page URL, and source file. That makes the edit easier to find and harder to apply in the wrong place.
+
+## How it works
+
+1. Add the overlay SDK to your app in development.
+2. Click the Inspect icon in the bottom-right corner.
+3. Hover to see element names highlighted.
+4. Click an element and write your feedback.
+5. Copy the generated Markdown prompt.
+6. Paste it into Codex, Cursor, Claude Code, or another agent.
+
+## What gets captured
+
+- The selected element tag, text, selector, classes, role, and dataset.
+- The current page URL and viewport size.
+- Computed styles like size, padding, color, font, border, radius, and shadow.
+- Source metadata from `data-elementation-*` attributes when available.
+
+## Next steps
+
+- [Installation](/docs/installation) - add the SDK to your app.
+- [Quickstart](/docs/quickstart) - generate your first prompt.
+- [Prompt Output](/docs/prompt-output) - see the generated Markdown format.

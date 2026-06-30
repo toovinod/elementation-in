@@ -1,0 +1,44 @@
+export const metadata = {
+  title: "Features",
+  description: "What Elementation does today.",
+};
+
+# Features
+
+## Element annotation
+
+Click any element — button, card, input, navbar, or text — and attach plain-language
+feedback. The overlay highlights elements on hover and locks a stronger outline on the
+selected one.
+
+## Rich capture
+
+Every selection records the tag, visible text, a readable CSS selector, class names, role
+and ARIA label, dataset, bounding box, a computed-style snapshot, the page URL, and the
+viewport size. See the [Capture Schema](/docs/schema).
+
+## Source resolution
+
+File path, line, and component name are resolved from `data-elementation-*` attributes,
+with a best-effort React fiber fallback. See [Source Mapping](/docs/source-mapping).
+
+## Prompt generation
+
+A capture becomes a structured, agent-ready Markdown prompt with task, constraints, and
+acceptance criteria — adapting based on whether source metadata is available. See
+[Prompt Output](/docs/prompt-output).
+
+## Persistence
+
+Annotations are saved per project. Provide an `apiUrl` to sync them to your dashboard
+(backed by SQLite, Postgres-ready), or omit it to keep them in `localStorage`.
+
+## Style isolation
+
+The overlay lives in a Shadow DOM root, so it never inherits or leaks styles and never
+selects itself.
+
+## Playground
+
+A built-in [playground](/playground) ships with a realistic sample UI and the overlay
+already live — no install required.

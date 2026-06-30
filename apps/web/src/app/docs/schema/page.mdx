@@ -1,0 +1,77 @@
+export const metadata = {
+  title: "Capture Schema",
+  description: "The ElementationCapture object captured for every selected element.",
+};
+
+# Capture Schema
+
+Every selected element produces an `ElementationCapture`. The type is derived from a Zod
+schema in `@elementation/core`, so the same definition validates data on the wire.
+
+```ts
+type ElementationCapture = {
+  id: string;
+  projectKey?: string;
+  createdAt: string;
+  feedback: string;
+  page: {
+    url: string;
+    pathname: string;
+    title: string;
+  };
+  viewport: {
+    width: number;
+    height: number;
+  };
+  element: {
+    tagName: string;
+    textContent: string;
+    selector: string;
+    id?: string;
+    className?: string;
+    role?: string;
+    ariaLabel?: string;
+    dataset: Record<string, string>;
+  };
+  box: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    top: number;
+    left: number;
+    right: number;
+    bottom: number;
+  };
+  styles: {
+    display: string;
+    position: string;
+    width: string;
+    height: string;
+    margin: string;
+    padding: string;
+    fontSize: string;
+    fontWeight: string;
+    color: string;
+    backgroundColor: string;
+    border: string;
+    borderRadius: string;
+    boxShadow: string;
+  };
+  source?: {
+    componentName?: string;
+    filePath?: string;
+    lineNumber?: number;
+    columnNumber?: number;
+  };
+};
+```
+
+## Notes
+
+- `box` comes from `getBoundingClientRect()`; values are viewport-relative pixels.
+- `styles` is a curated snapshot from `getComputedStyle()` — the properties most relevant
+  to a visual change.
+- `source` is only present when it can be resolved. See
+  [Source Mapping](/docs/source-mapping).
+- `dataset` excludes Elementation's own `data-elementation-*` attributes.

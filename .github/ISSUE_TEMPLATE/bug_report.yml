@@ -1,0 +1,45 @@
+name: Bug report
+description: Report a problem with Elementation
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to file a bug report!
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which part of Elementation is affected?
+      options:
+        - SDK / overlay
+        - Prompt engine
+        - Dashboard / web app
+        - Docs / website
+        - Source mapping
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click 'Inspect'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser, Node version, framework version.
+    validations:
+      required: false

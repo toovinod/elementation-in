@@ -1,0 +1,6 @@
+# Default owners for everything in the repo.
+* @elementation/maintainers
+
+/packages/sdk/ @elementation/sdk-team
+/packages/prompt-engine/ @elementation/prompt-team
+/apps/web/ @elementation/web-team

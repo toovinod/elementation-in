@@ -1,0 +1,9 @@
+{
+  "//": "Editor-convenience root config. Each package/app owns its real tsconfig.",
+  "extends": "./tooling/typescript-config/base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [],
+  "exclude": ["node_modules", "**/dist", "**/.next"]
+}

@@ -1,0 +1,78 @@
+export const metadata = {
+  title: "Prompt Output",
+  description: "The structure of a generated AI coding prompt.",
+};
+
+# Prompt Output
+
+`generateElementationPrompt(capture)` turns a capture into a structured Markdown prompt.
+The output is designed to give an agent everything it needs to find and change exactly one
+element.
+
+## Structure
+
+- **Intro** — frames the task and tells the agent to change only the selected element.
+- **User Feedback** — your verbatim instruction.
+- **Selected Element** — tag, text, selector, classes, page URL, and viewport.
+- **Source Location** — component, file, and line (only when available).
+- **Current Visual Styles** — the computed style snapshot.
+- **Task** — a one-line directive.
+- **Constraints** — guardrails that keep the change scoped and on-brand.
+- **Acceptance Criteria** — what "done" looks like.
+
+## Example
+
+```markdown
+You are working in a large frontend codebase. Fix only the selected UI element described below.
+
+## User Feedback
+
+This button is too large. Make it smaller and use the primary brand color.
+
+## Selected Element
+
+- Tag: button
+- Text: Get Started
+- Selector: section.hero button.primary-cta
+- Page: https://app.acme.com/pricing
+- Viewport: 1440x900
+
+## Source Location
+
+- Component: HeroCTA
+- File: src/components/HeroCTA.tsx
+- Line: 42
+
+## Current Visual Styles
+
+- Width: 220px
+- Padding: 16px 28px
+- Background: rgb(59, 130, 246)
+- Border radius: 8px
+
+## Task
+
+Update the selected button according to the user feedback.
+
+## Constraints
+
+- Modify only the relevant component or style files.
+- Do not refactor unrelated code.
+- If a design token or theme variable exists, use it instead of hardcoded colors.
+
+## Acceptance Criteria
+
+- The selected element visually matches the requested change.
+- No unrelated UI elements are changed.
+```
+
+## Conditional sections
+
+When source metadata is unavailable, the **Source Location** section is omitted and a
+constraint is added telling the agent to locate the element by selector, visible text, and
+class names instead.
+
+## Targets
+
+Pass a `target` (`"cursor"`, `"claude-code"`, `"codex"`, or `"generic"`) to tailor the
+intro line for a specific agent.

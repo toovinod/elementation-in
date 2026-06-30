@@ -1,0 +1,39 @@
+export const metadata = {
+  title: "Self-hosting",
+  description: "Run the dashboard locally and move from SQLite to Postgres.",
+};
+
+# Self-hosting
+
+The dashboard is a standard Next.js app. Locally it uses SQLite — a single file, no
+external services.
+
+## Run locally
+
+```bash
+pnpm install
+pnpm db:generate
+pnpm db:push
+pnpm dev
+```
+
+The database file is created at `apps/web/dev.db`.
+
+## Move to PostgreSQL
+
+Elementation uses Prisma, so switching databases is a configuration change:
+
+1. Set `provider = "postgresql"` in `apps/web/prisma/schema.prisma`.
+2. Point `DATABASE_URL` at your Postgres instance (e.g. Neon, Supabase, or RDS).
+3. Run `pnpm db:push` (or create a migration) to sync the schema.
+
+The models are portable, so no application code changes are required.
+
+> SQLite is great for local and self-hosted single-node use. For a serverless deployment
+> (where the filesystem is ephemeral), use Postgres or a hosted SQLite like Turso.
+
+## Deploy
+
+Build with `pnpm build` and run `pnpm --filter @elementation/web start`, or deploy the
+`apps/web` app to any Node host. Set `DATABASE_URL` and `NEXT_PUBLIC_APP_URL` in the
+environment.

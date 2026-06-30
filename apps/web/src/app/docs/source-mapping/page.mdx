@@ -1,0 +1,43 @@
+export const metadata = {
+  title: "Source Mapping",
+  description: "How Elementation resolves a component's file and line.",
+};
+
+# Source Mapping
+
+The most valuable context for an agent is _where the element lives_. Elementation resolves
+source metadata two ways.
+
+## Data attributes (authoritative)
+
+Add `data-elementation-*` attributes to a component's root element. Elementation walks up
+from the clicked element to the nearest ancestor carrying these attributes.
+
+```tsx
+<button
+  data-elementation-component="HeroCTA"
+  data-elementation-file="src/components/HeroCTA.tsx"
+  data-elementation-line="42"
+  data-elementation-column="12"
+>
+  Get Started
+</button>
+```
+
+- `data-elementation-component` → `source.componentName`
+- `data-elementation-file` → `source.filePath`
+- `data-elementation-line` → `source.lineNumber`
+- `data-elementation-column` → `source.columnNumber`
+
+## React fiber (fallback)
+
+When no data attributes are present, Elementation makes a best-effort attempt to read the
+component name from React's internal fiber tree. This is wrapped in a try/catch and is
+never load-bearing — React internals are private and can change between versions, so data
+attributes always win.
+
+## Roadmap: automatic injection
+
+For the MVP you add the attributes by hand (the playground's demo components show the
+pattern). A Babel/SWC/Vite plugin that injects them automatically at build time is on the
+[roadmap](/docs/roadmap).

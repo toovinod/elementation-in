@@ -1,0 +1,57 @@
+export const metadata = {
+  title: "SDK API",
+  description: "The @elementation/sdk public API.",
+};
+
+# SDK API
+
+Everything below is exported from `@elementation/sdk`.
+
+## &lt;ElementationOverlay /&gt;
+
+The overlay component. Render it once in development.
+
+```tsx
+<ElementationOverlay projectKey="el_..." apiUrl="https://elementation.in/api" target="claude-code" />
+```
+
+Props:
+
+- `projectKey?: string` — associates captured annotations with a project.
+- `apiUrl?: string` — when set, annotations are POSTed here; otherwise they go to
+  `localStorage`.
+- `target?: "generic" | "cursor" | "claude-code" | "codex"` — tailors the prompt's intro.
+
+## Helper functions
+
+These power the overlay and are exported for custom integrations.
+
+### getCssSelector(element)
+
+`(element: Element) => string` — a readable, reasonably specific selector. Prefers an
+`#id`, otherwise builds a short path of meaningful ancestors with a `:nth-of-type`
+fallback.
+
+### getElementText(element)
+
+`(element: Element) => string` — normalized, trimmed visible text (capped in length).
+
+### getComputedStyleSnapshot(element)
+
+`(element: HTMLElement) => CaptureStyles` — the curated computed-style subset used in
+prompts.
+
+### getElementSourceMetadata(element)
+
+`(element: Element) => SourceMetadata | undefined` — resolves component, file, line, and
+column. Re-exported from `@elementation/source-map`.
+
+### captureElement(element, feedback?, projectKey?)
+
+`(element: HTMLElement, feedback?: string, projectKey?: string) => ElementationCapture` —
+builds a complete, schema-valid capture.
+
+### generateElementationPrompt(capture, options?)
+
+`(capture: ElementationCapture, options?: { target?: PromptTarget; intro?: string }) => string`
+— produces the Markdown prompt. Re-exported from `@elementation/prompt-engine`.

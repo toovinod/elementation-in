@@ -1,0 +1,17 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tooling/*"
+
+# Dependencies whose lifecycle (install) scripts are allowed to run.
+# pnpm 10 blocks build scripts by default for supply-chain safety.
+onlyBuiltDependencies:
+  - "@prisma/client"
+  - "@prisma/engines"
+  - prisma
+  - better-sqlite3
+  - esbuild
+  - "@tailwindcss/oxide"
+  - sharp
+  - "@parcel/watcher"
+  - unrs-resolver

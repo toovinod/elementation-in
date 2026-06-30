@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & discussions
+    url: https://github.com/elementation/elementation/discussions
+    about: Ask questions and discuss ideas with the community.
+  - name: Documentation
+    url: https://elementation.in/docs
+    about: Read the Elementation docs.

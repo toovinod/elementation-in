@@ -1,0 +1,45 @@
+export const metadata = {
+  title: "The Overlay",
+  description: "How inspect mode, highlighting, and capture work.",
+};
+
+# The Overlay
+
+The overlay is a floating toolbar plus an inspection layer that lives entirely inside an
+isolated Shadow DOM root. It never modifies your app's DOM or styles, and it can never
+select itself.
+
+## Inspect mode
+
+Click **Inspect** to enter inspect mode:
+
+- The cursor becomes a crosshair.
+- Hovering an element draws an outline and shows a small `tag.class` label.
+- Clicking an element prevents the default action (no navigation), captures the element,
+  and opens the feedback popover anchored next to it.
+
+Click **Exit Inspect** or press <code>Escape</code> to leave inspect mode.
+
+## The feedback popover
+
+The popover shows the selected element's selector and a text area for your feedback. It
+stays open until you submit or cancel — clicking elsewhere on the page will not lose the
+captured element. Press <code>Escape</code> to dismiss it without generating a prompt.
+
+## The prompt panel
+
+After you click **Generate Prompt**, the generated prompt appears in a modal with a
+**Copy Prompt** button. The annotation is saved to your project at the same time (via the
+configured `apiUrl`, or to `localStorage` as a fallback).
+
+## Isolation guarantees
+
+- The overlay mounts a single host element marked with `data-elementation-ui="true"`.
+- All overlay UI renders inside that host's Shadow DOM, so host-page styles can't break it
+  and its styles can't leak into your app.
+- The element picker ignores anything inside the overlay, so it never inspects itself.
+
+## What it captures
+
+See [Capture Schema](/docs/schema) for the full shape, and
+[Source Mapping](/docs/source-mapping) for how file and component metadata is resolved.

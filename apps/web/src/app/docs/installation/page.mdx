@@ -1,0 +1,55 @@
+export const metadata = {
+  title: "Installation",
+  description: "Add the Elementation overlay SDK to your app.",
+};
+
+# Installation
+
+Elementation ships as one React SDK package.
+
+## Install
+
+```bash
+pnpm add @elementation/sdk
+```
+
+You can also use `npm install @elementation/sdk` or `yarn add @elementation/sdk`.
+
+## Add the overlay
+
+Render `<ElementationOverlay />` once near the root of your app. Keep it development-only.
+
+```tsx
+import { ElementationOverlay } from "@elementation/sdk";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        {process.env.NODE_ENV === "development" && (
+          <ElementationOverlay
+            projectKey="YOUR_PROJECT_KEY"
+            apiUrl="https://elementation.in/api"
+          />
+        )}
+      </body>
+    </html>
+  );
+}
+```
+
+## Project key
+
+Create a project in the [dashboard](/dashboard) and copy its key.
+
+If you do not pass `apiUrl`, annotations stay in `localStorage`. If you pass `apiUrl`, annotations sync to your Elementation dashboard.
+
+## Framework notes
+
+The overlay renders inside Shadow DOM, so it does not inherit your app styles and your app does not inherit its styles.
+
+## Next steps
+
+- [Quickstart](/docs/quickstart) - generate your first prompt.
+- [Configuration](/docs/configuration) - all overlay options.

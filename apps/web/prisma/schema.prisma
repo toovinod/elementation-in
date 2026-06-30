@@ -1,0 +1,29 @@
+// SQLite for local/self-hosted use. Switch `provider` to "postgresql" and point
+// the datasource url in prisma.config.ts at your instance for production.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Project {
+  id        String   @id @default(cuid())
+  name      String
+  key       String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Annotation {
+  id              String   @id @default(cuid())
+  projectKey      String
+  feedback        String
+  capture         Json
+  generatedPrompt String
+  createdAt       DateTime @default(now())
+
+  @@index([projectKey])
+}

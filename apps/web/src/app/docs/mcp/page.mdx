@@ -1,0 +1,27 @@
+export const metadata = {
+  title: "MCP server",
+  description: "Let agents read annotations directly over the Model Context Protocol.",
+};
+
+# MCP server
+
+> **Roadmap.** The MCP server is planned, not yet shipped. Today, the workflow is
+> copy-paste: generate a prompt and paste it into your agent.
+
+The Model Context Protocol (MCP) lets AI coding agents call tools and read context
+directly. An Elementation MCP server will remove the copy-paste step entirely.
+
+## What it will do
+
+- Expose your project's annotations as MCP resources/tools, so Claude Code, Cursor, or any
+  MCP client can list and read them.
+- Let an agent fetch the full capture for an annotation — selector, styles, and source
+  location — on demand.
+- Support two-way flow: an agent can mark an annotation resolved or ask for clarification.
+
+## Today
+
+Until the MCP server ships, use the [REST API](/docs/rest-api) to read annotations
+programmatically, or copy a generated prompt from the overlay or dashboard.
+
+Follow progress on the [roadmap](/docs/roadmap).

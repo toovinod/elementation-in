@@ -1,0 +1,45 @@
+export const metadata = {
+  title: "REST API",
+  description: "The HTTP API that backs the SDK's http adapter and the dashboard.",
+};
+
+# REST API
+
+When the overlay is given an `apiUrl`, it talks to these endpoints. They're served by the
+dashboard under `/api`. All request and response bodies are JSON and validated with the
+shared Zod schemas.
+
+## Projects
+
+### `GET /api/projects`
+
+Returns all projects, newest first.
+
+### `POST /api/projects`
+
+Creates a project. Body: `{ "name": string, "key"?: string }`. Returns the created project
+(`201`).
+
+### `GET /api/projects/:idOrKey`
+
+Returns a single project by id or key, or `null`.
+
+## Annotations
+
+### `GET /api/annotations?projectKey=...`
+
+Returns annotations, optionally filtered by `projectKey`, newest first.
+
+### `POST /api/annotations`
+
+Creates an annotation. Body is an `ElementationAnnotation` (`{ id, projectKey?, capture,
+generatedPrompt, createdAt }`). The `capture` is validated against the
+[Capture Schema](/docs/schema). Returns the created annotation (`201`).
+
+### `DELETE /api/annotations/:id`
+
+Deletes an annotation. Returns `204`.
+
+## Errors
+
+Invalid payloads return `400` with `{ "error": string }`.
