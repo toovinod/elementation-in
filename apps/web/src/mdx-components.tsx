@@ -30,7 +30,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     a: ({ href = "", ...props }: ComponentProps<"a">) => (
       <Link
         href={href}
-        className="font-medium text-[#2f6fed] underline underline-offset-4"
+        className="text-brand-500 font-medium underline underline-offset-4"
         {...props}
       />
     ),
