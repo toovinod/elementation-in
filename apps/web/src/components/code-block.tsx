@@ -11,19 +11,21 @@ export function CodeBlock({ code, language, className }: CodeBlockProps) {
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-slate-200 bg-white text-slate-800 shadow-sm",
+        "border-border bg-card text-foreground group relative overflow-hidden rounded-2xl border shadow-sm",
         className,
       )}
     >
-      <div className="flex h-11 items-center justify-between border-b border-slate-200 bg-[#f8fbff] px-4">
+      <div className="border-border bg-muted flex h-11 items-center justify-between border-b px-4">
         <div className="flex items-center gap-2">
-          <span className="size-2.5 rounded-full bg-[#f36b6d]" />
-          <span className="size-2.5 rounded-full bg-[#f4bd4f]" />
-          <span className="size-2.5 rounded-full bg-[#2bbf78]" />
+          <span className="bg-primary/70 size-2.5 rounded-full" />
+          <span className="bg-highlight size-2.5 rounded-full" />
+          <span className="bg-border size-2.5 rounded-full" />
         </div>
-        <span className="font-mono text-[11px] text-slate-400">{language ?? "code"}</span>
+        <span className="text-muted-foreground font-mono text-[11px] uppercase tracking-wider">
+          {language ?? "code"}
+        </span>
       </div>
-      <pre className="overflow-x-auto p-4 text-sm leading-relaxed text-slate-700">
+      <pre className="text-foreground/80 overflow-x-auto p-4 text-sm leading-relaxed">
         <code className="font-mono">{code}</code>
       </pre>
       <div className="absolute right-2 top-12 opacity-0 transition-opacity group-hover:opacity-100">
@@ -33,7 +35,7 @@ export function CodeBlock({ code, language, className }: CodeBlockProps) {
           size="sm"
           label=""
           aria-label={`Copy ${language ?? "code"}`}
-          className="text-slate-500 hover:bg-[#f4f8ff] hover:text-[#2f6fed]"
+          className="text-muted-foreground hover:bg-secondary hover:text-primary"
         />
       </div>
     </div>

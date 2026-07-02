@@ -17,13 +17,103 @@ model Project {
   createdAt DateTime @default(now())
 }
 
+model Session {
+  id          String       @id @default(cuid())
+  projectKey  String?
+  name        String
+  url         String?
+  pathname    String?
+  userAgent   String?
+  status      String       @default("active")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  annotations Annotation[]
+  events      Event[]
+
+  @@index([projectKey])
+  @@index([status])
+}
+
 model Annotation {
   id              String   @id @default(cuid())
+  sessionId       String?
   projectKey      String
   feedback        String
   capture         Json
   generatedPrompt String
+  status          String   @default("pending")
+  acknowledgedAt  DateTime?
+  resolvedAt      DateTime?
+  resolvedBy      String?
+  dismissedAt     DateTime?
+  dismissedReason String?
+  updatedAt       DateTime @updatedAt
   createdAt       DateTime @default(now())
+  session         Session? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  threadMessages  ThreadMessage[]
+
+  @@index([sessionId])
+  @@index([projectKey])
+  @@index([status])
+}
+
+model ThreadMessage {
+  id           String     @id @default(cuid())
+  annotationId String
+  role         String
+  message      String
+  createdAt    DateTime   @default(now())
+  annotation   Annotation @relation(fields: [annotationId], references: [id], onDelete: Cascade)
+
+  @@index([annotationId])
+}
+
+model Event {
+  id         String   @id @default(cuid())
+  type       String
+  sessionId  String?
+  projectKey String?
+  sequence   Int      @unique
+  payload    Json
+  createdAt  DateTime @default(now())
+  session    Session? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId])
+  @@index([projectKey])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model WebhookEndpoint {
+  id         String            @id @default(cuid())
+  projectKey String?
+  url        String
+  secret     String
+  events     Json
+  enabled    Boolean           @default(true)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  deliveries WebhookDelivery[]
 
   @@index([projectKey])
+  @@index([enabled])
+}
+
+model WebhookDelivery {
+  id             String          @id @default(cuid())
+  webhookId      String
+  eventId        String
+  status         String          @default("pending")
+  attempts       Int             @default(0)
+  nextAttemptAt  DateTime?
+  responseStatus Int?
+  responseBody   String?
+  error          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  webhook        WebhookEndpoint @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@unique([webhookId, eventId])
+  @@index([eventId])
+  @@index([status])
 }

@@ -1,27 +1,100 @@
 export const metadata = {
   title: "MCP server",
-  description: "Let agents read annotations directly over the Model Context Protocol.",
+  description: "Let agents read and resolve annotations directly over the Model Context Protocol.",
 };
 
 # MCP server
 
-> **Roadmap.** The MCP server is planned, not yet shipped. Today, the workflow is
-> copy-paste: generate a prompt and paste it into your agent.
+The Model Context Protocol (MCP) lets AI coding agents call tools and read context directly.
+The `elementation` package ships an MCP server that removes the copy-paste step: your agent
+lists pending annotations, reads the full capture (selector, styles, source location), applies
+the change, and marks the annotation resolved — all without leaving the editor.
 
-The Model Context Protocol (MCP) lets AI coding agents call tools and read context
-directly. An Elementation MCP server will remove the copy-paste step entirely.
+## How it works
 
-## What it will do
+The MCP server runs over **stdio** and is a thin client of the Elementation
+[REST API](/docs/rest-api). Your dashboard (local or hosted) stays the single source of
+truth; the agent reads and writes annotations through it.
 
-- Expose your project's annotations as MCP resources/tools, so Claude Code, Cursor, or any
-  MCP client can list and read them.
-- Let an agent fetch the full capture for an annotation — selector, styles, and source
-  location — on demand.
-- Support two-way flow: an agent can mark an annotation resolved or ask for clarification.
+```
+overlay ──POST──▶ Elementation API ◀──tools── elementation (MCP, stdio) ◀──▶ your agent
+```
 
-## Today
+## Install
 
-Until the MCP server ships, use the [REST API](/docs/rest-api) to read annotations
-programmatically, or copy a generated prompt from the overlay or dashboard.
+Point your agent at the server with one command:
 
-Follow progress on the [roadmap](/docs/roadmap).
+```bash
+# Claude Code (writes .mcp.json in the current project)
+npx elementation init
+
+# Or target another client explicitly
+npx elementation init --client cursor
+npx elementation init --client windsurf
+npx elementation init --client codex     # prints the TOML snippet to add
+```
+
+Then verify Node, config, and connectivity:
+
+```bash
+npx elementation doctor
+```
+
+By default the server talks to `http://localhost:3000`. Point it at another backend with
+`--http-url` (or the `ELEMENTATION_HTTP_URL` env var), and pass a bearer token with
+`--token` (or `ELEMENTATION_TOKEN`) when the backend is secured.
+
+### Generated config
+
+`init` writes (or merges) an `mcpServers` entry like this:
+
+```json
+{
+  "mcpServers": {
+    "elementation": {
+      "command": "npx",
+      "args": ["-y", "elementation", "server", "--http-url", "http://localhost:3000"]
+    }
+  }
+}
+```
+
+## Tools
+
+The server exposes nine tools, all prefixed `elementation_`:
+
+| Tool | Purpose |
+| --- | --- |
+| `elementation_list_sessions` | List sessions (pages with feedback). |
+| `elementation_get_session` | Fetch one session and all of its annotations. |
+| `elementation_get_pending` | Pending/acknowledged annotations for one session. |
+| `elementation_get_all_pending` | Pending annotations across every session. |
+| `elementation_acknowledge` | Mark an annotation as seen before you start. |
+| `elementation_resolve` | Mark an annotation done, with an optional summary. |
+| `elementation_dismiss` | Reject an annotation with a reason. |
+| `elementation_reply` | Post a threaded message (e.g. ask for clarification). |
+| `elementation_watch_annotations` | Block until new pending annotations arrive. |
+
+## A typical loop
+
+1. Call `elementation_get_all_pending` (or `elementation_watch_annotations` to block until
+   feedback arrives).
+2. `elementation_acknowledge` the annotation you're about to work on.
+3. Read its selector, styles, and source file, then apply the change.
+4. `elementation_resolve` it (or `elementation_dismiss` with a reason, or
+   `elementation_reply` to ask a question).
+
+## Embedding
+
+`elementation` also exports the server programmatically, so a hosted deployment can run it
+against any client implementation:
+
+```ts
+import { createElementationMcpServer } from "elementation";
+
+const server = createElementationMcpServer({
+  baseUrl: "https://elementation.in",
+  token: process.env.ELEMENTATION_TOKEN,
+});
+// connect `server` to any MCP transport
+```

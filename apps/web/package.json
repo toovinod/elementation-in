@@ -21,6 +21,7 @@
     "@elementation/prompt-engine": "workspace:*",
     "@elementation/sdk": "workspace:*",
     "@elementation/source-map": "workspace:*",
+    "@elementation/webhooks": "workspace:*",
     "@prisma/adapter-better-sqlite3": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@radix-ui/react-dialog": "^1.1.4",

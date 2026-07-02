@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/site-header";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#fbfaf8]">
+    <div className="bg-background flex min-h-screen flex-col">
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 md:px-6 md:py-12">
         {children}

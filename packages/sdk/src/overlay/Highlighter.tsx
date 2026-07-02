@@ -16,7 +16,14 @@ export function Highlighter() {
           <span className="elementation-tag">{hovered.label}</span>
         </div>
       ) : null}
-      {selected ? <div className="elementation-selected" style={rectStyle(selected.rect)} /> : null}
+      {selected ? (
+        <div className="elementation-selected" style={rectStyle(selected.rect)}>
+          <span className="elementation-handle" data-corner="tl" />
+          <span className="elementation-handle" data-corner="tr" />
+          <span className="elementation-handle" data-corner="bl" />
+          <span className="elementation-handle" data-corner="br" />
+        </div>
+      ) : null}
     </>
   );
 }

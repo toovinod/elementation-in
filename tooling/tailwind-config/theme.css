@@ -1,47 +1,53 @@
 /*
  * Elementation shared design tokens (Tailwind CSS v4, CSS-first).
- * Light-only Inter-based product palette.
+ * "Expressive Studio" — cream canvas, ink, violet, and a lime marker accent.
+ * Light-only, tokens kept dark-ready. The brand ramp is the violet scale.
  */
 
 @theme {
   --font-sans: var(--font-inter), Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "SF Mono", ui-monospace, Menlo, monospace;
+  --font-display: var(--font-newsreader), Newsreader, ui-serif, Georgia, serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-  --color-brand-50: #f4f8ff;
-  --color-brand-100: #e7f0ff;
-  --color-brand-200: #cfe0ff;
-  --color-brand-300: #a9c8ff;
-  --color-brand-400: #76a6fb;
-  --color-brand-500: #2f6fed;
-  --color-brand-600: #255fd7;
-  --color-brand-700: #214fb0;
-  --color-brand-800: #223f85;
-  --color-brand-900: #223866;
-  --color-brand-950: #17233f;
+  --color-brand-50: #f0edff;
+  --color-brand-100: #e3ddff;
+  --color-brand-200: #c9beff;
+  --color-brand-300: #a18fff;
+  --color-brand-400: #856eff;
+  --color-brand-500: #6a4bff;
+  --color-brand-600: #5a3de0;
+  --color-brand-700: #4a30bc;
+  --color-brand-800: #3a2693;
+  --color-brand-900: #2c1d70;
+  --color-brand-950: #1c1248;
+
+  --color-highlight: #d8f36b;
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.875rem;
 
-  --background: #fbfaf8;
-  --foreground: #1f2937;
+  --background: #fbf6ec;
+  --foreground: #181410;
   --card: #ffffff;
-  --card-foreground: #1f2937;
+  --card-foreground: #181410;
   --popover: #ffffff;
-  --popover-foreground: #1f2937;
-  --primary: #2f6fed;
+  --popover-foreground: #181410;
+  --primary: #6a4bff;
   --primary-foreground: #ffffff;
-  --secondary: #eef5ff;
-  --secondary-foreground: #27415f;
-  --muted: #f3f6fa;
-  --muted-foreground: #64748b;
-  --accent: #fff4f4;
-  --accent-foreground: #d94f57;
-  --destructive: #dc2626;
+  --secondary: #f2ead9;
+  --secondary-foreground: #4a4234;
+  --muted: #f2ead9;
+  --muted-foreground: #6e6453;
+  --accent: #ece7ff;
+  --accent-foreground: #4a30bc;
+  --destructive: #c4453a;
   --destructive-foreground: #ffffff;
-  --border: #dfe6ee;
-  --input: #cbd5e1;
-  --ring: #2f6fed;
+  --success: #5e7a4e;
+  --highlight: #d8f36b;
+  --border: #e7dac3;
+  --input: #ddcfb4;
+  --ring: #6a4bff;
 }
 
 @theme inline {
@@ -61,6 +67,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-highlight: var(--highlight);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

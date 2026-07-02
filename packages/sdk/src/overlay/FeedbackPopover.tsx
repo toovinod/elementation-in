@@ -33,6 +33,7 @@ export function FeedbackPopover({ config }: { config: ResolvedConfig }) {
   const sourceLabel = source?.filePath
     ? `${source.filePath}${source.lineNumber ? `:${source.lineNumber}` : ""}`
     : "Source metadata unavailable";
+  const tag = selected.capture.element.tagName.toLowerCase();
 
   const generate = async () => {
     const capture = { ...selected.capture, feedback: feedback.trim() };
@@ -54,9 +55,9 @@ export function FeedbackPopover({ config }: { config: ResolvedConfig }) {
   return (
     <div className="elementation-popover" style={popoverPosition(selected.rect)}>
       <div className="elementation-popover-head">
-        <div>
-          <div className="elementation-eyebrow">Add feedback</div>
-          <div className="elementation-selector">{selected.capture.element.selector}</div>
+        <div className="elementation-chip">
+          <span className="elementation-chip-tag">{tag}</span>
+          <span className="elementation-chip-sel">{selected.capture.element.selector}</span>
         </div>
         <button
           type="button"
@@ -75,12 +76,15 @@ export function FeedbackPopover({ config }: { config: ResolvedConfig }) {
           id="elementation-feedback"
           ref={textareaRef}
           className="elementation-textarea"
-          placeholder="Make this button smaller and use the primary brand color."
+          placeholder="Make this button smaller and use the brand color."
           value={feedback}
           onChange={(event) => setFeedback(event.target.value)}
         />
         <div className="elementation-source">
-          <span>Source</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9z" />
+            <path d="M13 3v6h6" />
+          </svg>
           <code>{sourceLabel}</code>
         </div>
         <div className="elementation-actions">
@@ -98,7 +102,7 @@ export function FeedbackPopover({ config }: { config: ResolvedConfig }) {
             disabled={!feedback.trim()}
             onClick={() => void generate()}
           >
-            Add
+            Generate prompt
           </button>
         </div>
       </div>

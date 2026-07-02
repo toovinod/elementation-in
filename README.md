@@ -44,10 +44,13 @@ TypeScript throughout.
 apps/
   web/                  Next.js 16 app — landing, dashboard, playground, docs, REST API
 packages/
-  core/                 Shared types, zod capture schema, storage abstraction
+  core/                 Shared types, zod capture schema, storage + lifecycle abstraction
   source-map/           Read data-elementation-* source metadata (+ React name fallback)
   prompt-engine/        Turn a capture into an AI-ready prompt
   sdk/                  The <ElementationOverlay /> overlay (Shadow DOM, near-zero deps)
+  webhooks/             Sign (HMAC-SHA256) and deliver event webhooks
+  mcp/                  MCP server core — nine tools over the REST API (@elementation/mcp)
+  elementation/         The `elementation` CLI: npx elementation server | init | doctor
 tooling/
   typescript-config/    Shared strict tsconfig bases
   eslint-config/        Shared ESLint flat config
@@ -108,6 +111,25 @@ The overlay renders into an isolated Shadow DOM root, so it never inherits or le
 styles, and it never selects itself. Without an `apiUrl` it persists annotations to
 `localStorage`; with one, it syncs them to your dashboard.
 
+## AI agents (MCP)
+
+Instead of copy-pasting prompts, let your agent read and resolve annotations directly. The
+`elementation` package is an MCP server (over stdio) that talks to your dashboard's REST API.
+
+```bash
+npx elementation init      # write the MCP config (Claude Code; or --client cursor|windsurf|codex)
+npx elementation doctor    # check Node, config, and backend connectivity
+```
+
+Your agent gets nine `elementation_*` tools — list sessions, read pending annotations,
+acknowledge, resolve, dismiss, reply, and watch for new feedback — so it can pull feedback,
+apply the change against the exact selector and source file, and mark it resolved. See the
+[MCP docs](https://elementation.in/docs/mcp).
+
+The same events power signed **[webhooks](https://elementation.in/docs/webhooks)** (with
+automatic retries) and a versioned **[REST API](https://elementation.in/docs/rest-api)**
+under `/api/v1` (sessions, annotations, lifecycle, pending, thread, and SSE event streams).
+
 ## Data & persistence
 
 The MVP uses **Prisma + SQLite** — a single local file, no external services. A storage
@@ -125,12 +147,14 @@ a `provider` swap plus a `DATABASE_URL`.
 
 ## Roadmap
 
+**Shipped:** versioned REST API (`/api/v1`), MCP server (`npx elementation`), signed
+webhooks with retries.
+
 - Babel/SWC/Vite plugin for automatic source-file metadata
-- MCP server (let agents read annotations directly — no copy-paste)
-- Real database + auth + team workspaces
+- Authentication + project-scoped API keys (the MCP client already accepts a `--token`)
+- Team workspaces
 - Screenshot capture and Figma integration
 - GitHub issue creation
-- First-class Cursor / Codex / Claude Code integrations
 - Browser extension
 
 ## Contributing

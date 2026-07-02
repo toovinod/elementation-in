@@ -17,8 +17,137 @@
     color: var(--foreground);
   }
 
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-optical-sizing: auto;
+  }
+
   ::selection {
-    background: #d9e8ff;
-    color: #1f2937;
+    background: #ddd6ff;
+    color: #181410;
+  }
+}
+
+@layer components {
+  /* Lime marker highlight that draws in behind a headline phrase. */
+  .marker {
+    position: relative;
+    white-space: nowrap;
+  }
+  .marker > span {
+    position: relative;
+    z-index: 1;
+  }
+  .marker::before {
+    content: "";
+    position: absolute;
+    left: -0.07em;
+    right: -0.07em;
+    bottom: 0.07em;
+    height: 0.46em;
+    border-radius: 2px;
+    background: var(--highlight);
+    transform: scaleX(0);
+    transform-origin: left center;
+    animation: el-marker 0.75s 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  /* Scroll reveal — toggled by the Reveal component via data-visible. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal[data-visible="true"] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Annotation pin pop-in. */
+  .pin-pop {
+    animation: el-pin-pop 0.5s cubic-bezier(0.2, 1.25, 0.45, 1) both;
+  }
+  .pin-pulse::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    animation: el-pin-pulse 2.4s ease-out infinite;
+  }
+
+  /* Feedback popover entrance — plays when it opens after selection. */
+  .el-pop-in {
+    animation: el-pop-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+}
+
+@keyframes el-marker {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes el-pin-pop {
+  0% {
+    transform: scale(0) translateY(8px);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.14);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes el-pin-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(106, 75, 255, 0.4);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 9px rgba(106, 75, 255, 0);
+  }
+}
+
+@keyframes el-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .marker::before {
+    animation: none;
+    transform: scaleX(1);
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .pin-pop {
+    animation: none;
+  }
+  .pin-pulse::after {
+    animation: none;
+  }
+  .el-pop-in {
+    animation: none;
   }
 }

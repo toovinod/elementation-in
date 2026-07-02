@@ -1,45 +1,106 @@
 export const metadata = {
   title: "REST API",
-  description: "The HTTP API that backs the SDK's http adapter and the dashboard.",
+  description: "The HTTP API that backs the overlay, the dashboard, and the MCP server.",
 };
 
 # REST API
 
-When the overlay is given an `apiUrl`, it talks to these endpoints. They're served by the
-dashboard under `/api`. All request and response bodies are JSON and validated with the
-shared Zod schemas.
+Elementation serves a versioned HTTP API under `/api/v1`. It backs the dashboard, the
+overlay's sync, and the [MCP server](/docs/mcp). All request and response bodies are JSON,
+validated with the shared [capture schema](/docs/schema) and Zod. Invalid payloads return
+`400` with `{ "error": string }`; missing resources return `404`.
 
-## Projects
+The base URL is your dashboard origin (locally `http://localhost:3000`).
 
-### `GET /api/projects`
+## Sessions
 
-Returns all projects, newest first.
+A session is a page/tab that has feedback. It groups annotations.
 
-### `POST /api/projects`
-
-Creates a project. Body: `{ "name": string, "key"?: string }`. Returns the created project
-(`201`).
-
-### `GET /api/projects/:idOrKey`
-
-Returns a single project by id or key, or `null`.
+| Method | Path | Body / notes |
+| --- | --- | --- |
+| `GET` | `/api/v1/sessions` | List sessions, newest first. |
+| `POST` | `/api/v1/sessions` | `{ name?, url?, pathname?, projectKey?, userAgent? }` → `201`. |
+| `GET` | `/api/v1/sessions/:id` | One session, or `404`. |
+| `PATCH` | `/api/v1/sessions/:id` | `{ status?: "active" \| "closed" \| "approved", url?, pathname? }`. |
 
 ## Annotations
 
-### `GET /api/annotations?projectKey=...`
+| Method | Path | Body / notes |
+| --- | --- | --- |
+| `GET` | `/api/v1/sessions/:id/annotations` | Annotations for a session. |
+| `POST` | `/api/v1/sessions/:id/annotations` | An `ElementationAnnotation` (`{ id, projectKey?, capture, generatedPrompt, createdAt }`) → `201`. |
+| `GET` | `/api/v1/annotations/:id` | One annotation with its thread, or `404`. |
+| `PATCH` | `/api/v1/annotations/:id` | Lifecycle update (below). |
+| `DELETE` | `/api/v1/annotations/:id` | Delete → `204`. |
+| `POST` | `/api/v1/annotations/:id/thread` | `{ role?: "human" \| "agent" \| "system", message }` → `201`. |
 
-Returns annotations, optionally filtered by `projectKey`, newest first.
+### Lifecycle
 
-### `POST /api/annotations`
+`PATCH /api/v1/annotations/:id` accepts `{ status?, feedback?, generatedPrompt?, summary?,
+reason? }`. Setting `status` moves the annotation through its lifecycle and stamps the
+matching timestamp:
 
-Creates an annotation. Body is an `ElementationAnnotation` (`{ id, projectKey?, capture,
-generatedPrompt, createdAt }`). The `capture` is validated against the
-[Capture Schema](/docs/schema). Returns the created annotation (`201`).
+- `acknowledged` — the agent has seen it.
+- `resolved` — done (`summary` optional, `resolvedBy` set to `agent`).
+- `dismissed` — rejected (`reason` recorded).
 
-### `DELETE /api/annotations/:id`
+## Pending
 
-Deletes an annotation. Returns `204`.
+Pending means `status` is `pending` or `acknowledged` — i.e. not yet resolved or dismissed.
 
-## Errors
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` | `/api/v1/pending` | Pending annotations across all sessions. |
+| `GET` | `/api/v1/sessions/:id/pending` | Pending annotations for one session. |
 
-Invalid payloads return `400` with `{ "error": string }`.
+## Events
+
+Every mutation emits an ordered event. Event types:
+
+`session.created` · `session.updated` · `session.closed` · `annotation.created` ·
+`annotation.updated` · `annotation.deleted` · `annotation.acknowledged` ·
+`annotation.resolved` · `annotation.dismissed` · `thread.message.created` ·
+`prompt.generated` · `action.requested`
+
+Stream them with Server-Sent Events. Each message has an `id` (the monotonic `sequence`),
+an `event` (the type), and a JSON `data` payload. Resume after a disconnect with
+`?after=<sequence>` or the `Last-Event-ID` header.
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` | `/api/v1/events` | Global stream. Filter with `?projectKey=...`. |
+| `GET` | `/api/v1/sessions/:id/events` | Stream scoped to one session. |
+
+```bash
+curl -N http://localhost:3000/api/v1/events
+```
+
+## Webhooks
+
+Forward events to external URLs. See [Webhooks](/docs/webhooks) for the payload and
+signature format.
+
+| Method | Path | Body / notes |
+| --- | --- | --- |
+| `GET` | `/api/v1/webhooks` | List endpoints (secrets redacted). Filter with `?projectKey=...`. |
+| `POST` | `/api/v1/webhooks` | `{ url, events: string[], projectKey?, secret? }` → `201`. |
+| `PATCH` | `/api/v1/webhooks/:id` | Update `url`, `events`, `enabled`, etc. |
+| `DELETE` | `/api/v1/webhooks/:id` | Disable the endpoint → `204`. |
+| `POST` | `/api/v1/webhooks/deliveries/retry` | Redeliver due failed deliveries → `{ retried, delivered, failed }`. |
+
+## Health
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| `GET` | `/api/v1/health` | Liveness: `{ ok, service, timestamp }`. |
+| `GET` | `/api/v1/status` | `{ ok, service, storage, counts, timestamp }`. |
+
+## Legacy endpoints
+
+The first-generation `/api` routes remain for the overlay's simple `localStorage`-style
+sync and are unversioned:
+
+- `GET/POST /api/projects`, `GET /api/projects/:idOrKey`
+- `GET /api/annotations?projectKey=...`, `POST /api/annotations`, `DELETE /api/annotations/:id`
+
+New integrations should use `/api/v1`.

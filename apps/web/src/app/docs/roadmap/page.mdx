@@ -5,20 +5,28 @@ export const metadata = {
 
 # Roadmap
 
-Elementation's MVP focuses on the capture → prompt → copy loop. Here's what's next.
+Elementation's MVP focuses on the capture → prompt → copy loop, with a full integration
+surface for AI agents on top. Here's what's shipped and what's next.
+
+## Shipped
+
+- **REST API** — a versioned `/api/v1` for sessions, annotations, events, and webhooks. See
+  [REST API](/docs/rest-api).
+- **MCP server** — agents read and resolve annotations directly, no copy-paste, via
+  `npx elementation`. See [MCP server](/docs/mcp).
+- **Webhooks** — signed event delivery with automatic retries. See
+  [Webhooks](/docs/webhooks).
 
 ## Near term
 
 - **Babel/SWC/Vite plugin** — inject `data-elementation-*` source attributes automatically
   at build time, so file/line resolution works everywhere with zero manual annotation.
-- **MCP server** — let agents read annotations directly, removing copy-paste. See
-  [MCP server](/docs/mcp).
-- **Webhooks** — push annotations to Linear, GitHub, or Slack. See
-  [Webhooks](/docs/webhooks).
+- **Authentication and API keys** — project-scoped bearer tokens across the API and MCP
+  (the MCP client already accepts a `--token`).
 
 ## Later
 
-- **Authentication and team workspaces** — shared projects with roles.
+- **Team workspaces** — shared projects with roles.
 - **Screenshot capture** — attach a cropped screenshot to each annotation.
 - **Figma integration** — reference a design alongside the live element.
 - **GitHub issue creation** — open an issue straight from an annotation.

@@ -1,23 +1,98 @@
 export const metadata = {
   title: "Webhooks",
-  description: "Push annotations to external services.",
+  description: "Push annotation and session events to external services, signed.",
 };
 
 # Webhooks
 
-> **Roadmap.** Webhooks are planned, not yet shipped.
+Webhooks forward Elementation events to any URL, so annotations fit your existing workflow —
+create a Linear issue, open a GitHub issue, or post to Slack when feedback arrives.
 
-Webhooks will let you forward new annotations to external services so they fit your
-existing workflow.
+## Register an endpoint
 
-## What it will do
+```bash
+curl -X POST http://localhost:3000/api/v1/webhooks \
+  -H "content-type: application/json" \
+  -d '{
+    "url": "https://example.com/hooks/elementation",
+    "events": ["annotation.created", "annotation.resolved"],
+    "projectKey": "el_your_key"
+  }'
+```
 
-- Fire a signed `POST` to a configured URL whenever an annotation is created.
-- Deliver the full annotation payload, including the capture and generated prompt.
-- Enable integrations like creating a Linear issue, opening a GitHub issue, or posting to
-  Slack.
+`projectKey` is optional — omit it to receive events from every project. A signing `secret`
+is generated for you (and returned once on create); you can also supply your own
+(`secret`, min 16 chars). Manage endpoints with `GET/POST /api/v1/webhooks` and
+`PATCH/DELETE /api/v1/webhooks/:id` — see the [REST API](/docs/rest-api).
 
-## Today
+## Events
 
-Use the [REST API](/docs/rest-api) to poll for annotations, or read them from the
-dashboard. Track progress on the [roadmap](/docs/roadmap).
+Any of the [event types](/docs/rest-api#events) can trigger a webhook:
+
+`session.created` · `session.updated` · `session.closed` · `annotation.created` ·
+`annotation.updated` · `annotation.deleted` · `annotation.acknowledged` ·
+`annotation.resolved` · `annotation.dismissed` · `thread.message.created` ·
+`prompt.generated` · `action.requested`
+
+## Payload
+
+Every delivery is a `POST` with this JSON body:
+
+```json
+{
+  "id": "evt_...",
+  "event": "annotation.created",
+  "timestamp": "2026-07-03T00:00:00.000Z",
+  "sequence": 42,
+  "sessionId": "sess_...",
+  "projectKey": "el_your_key",
+  "data": { "...": "the annotation, session, or thread message" }
+}
+```
+
+## Signature verification
+
+Each request carries these headers:
+
+| Header | Value |
+| --- | --- |
+| `x-elementation-signature` | `v1=<hex>` HMAC-SHA256 |
+| `x-elementation-timestamp` | Unix ms used in the signature |
+| `x-elementation-event-id` | The event id |
+| `x-elementation-event-type` | The event type |
+| `user-agent` | `Elementation-Webhooks/1.0` |
+
+The signature is `HMAC_SHA256(secret, "{timestamp}.{rawBody}")`, hex-encoded and prefixed
+with `v1=`. Verify it against the **raw** request body (before JSON parsing) with the
+helper from `@elementation/webhooks`:
+
+```ts
+import { verifyWebhookSignature } from "@elementation/webhooks";
+
+const valid = verifyWebhookSignature({
+  payload: rawBody, // exact bytes of the request body
+  secret: process.env.ELEMENTATION_WEBHOOK_SECRET,
+  timestamp: Number(request.headers["x-elementation-timestamp"]),
+  signature: request.headers["x-elementation-signature"],
+});
+if (!valid) return new Response("bad signature", { status: 401 });
+```
+
+The comparison is timing-safe. Reject requests whose `timestamp` is far from your clock to
+prevent replay.
+
+## Delivery and retries
+
+Deliveries are recorded per (endpoint, event). A non-2xx response or network error marks the
+delivery `failed` and schedules a retry with exponential backoff
+(`min(60s × attempts, 15m)`), up to 8 attempts before it is dead-lettered.
+
+Due retries are drained by calling:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/webhooks/deliveries/retry
+# -> { "retried": 1, "delivered": 0, "failed": 1 }
+```
+
+Wire this to a scheduler (cron, a queue, or a platform cron job) to retry failed deliveries
+automatically.

@@ -46,7 +46,7 @@ export function PromptDialog() {
             Close
           </button>
           <button type="button" className="elementation-btn" onClick={() => void copy()}>
-            {copied ? "Copied" : "Copy Markdown"}
+            {copied ? "Copied" : "Copy prompt"}
           </button>
         </div>
       </div>
