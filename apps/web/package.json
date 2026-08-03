@@ -55,7 +55,7 @@
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "eslint": "^9.18.0",
+    "eslint": "^10.8.0",
     "jsdom": "^25.0.1",
     "prisma": "^7.8.0",
     "tailwindcss": "^4.0.0",
