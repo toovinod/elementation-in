@@ -1,0 +1,33 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+# pnpm is not installed globally here, so `corepack pnpm` runs the version pinned
+# in package.json (pnpm@10.18.3). Turbo shells out to a real `pnpm` binary, so
+# drop a corepack shim in node_modules/.bin (which pnpm puts on PATH for scripts)
+# rather than `corepack enable`, which needs sudo to write to /usr/local/bin.
+# `pnpm install` triggers apps/web's postinstall (prisma generate); the sqlite
+# dev.db is gitignored, so each workspace needs its own `prisma db push`.
+setup = "COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm install && { command -v pnpm >/dev/null || corepack enable --install-directory \"$PWD/node_modules/.bin\" pnpm; } && corepack pnpm --filter @elementation/web exec prisma db push"
+
+# Each workspace gets its own port and its own worktree-local sqlite file.
+run_mode = "concurrent"
+
+# Reclaim node_modules / turbo / next build output when a workspace is archived.
+archive = 'find . -maxdepth 4 -type d \( -name node_modules -o -name .turbo -o -name .next \) -prune -exec rm -rf {} +'
+
+# apps/web hardcodes `next dev -p 3000`, so invoke next directly with the
+# workspace port and align NEXT_PUBLIC_APP_URL with it (shell env wins over .env).
+[scripts.run.dev]
+command = 'NEXT_PUBLIC_APP_URL="http://localhost:$CONDUCTOR_PORT" corepack pnpm --filter @elementation/web exec next dev -p $CONDUCTOR_PORT'
+default = true
+icon = "play"
+available_in = [ "local" ]
+
+# The pre-PR gates from CONTRIBUTING.md (e2e excluded: it pins port 3000).
+[scripts.run.checks]
+command = "corepack pnpm lint && corepack pnpm check-types && corepack pnpm test"
+icon = "circle-check"
+
+[scripts.run.build]
+command = "corepack pnpm build"
+icon = "hammer"
